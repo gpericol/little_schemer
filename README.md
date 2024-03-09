@@ -1,4 +1,3 @@
-```
 # Lisp Inspired by "The Little Schemer"
 
 ## Overview
