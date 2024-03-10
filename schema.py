@@ -1,40 +1,27 @@
-DEBUG = True
+from S_Expressions import *
+
+DEBUG = False
 
 COMMANDS = [
-    "car"
-]
-
-class Atom:
-    def __init__(self, value):
-        self.value = value
-    
-    def __repr__(self):
-        return self.value
-    
-class CAR:
-    def __init__(self, value):
-        self.value = value
-
-    def validate(self):
-        if self.value is None:
-            print("Error: CAR: None argument")
-            exit(1)
-        elif not isinstance(self.value, list):
-            print("Error: CAR: argument must be a list")
-            exit(1)
-        elif len(self.value) == 0:
-            print("Error: CAR: empty list")
-            exit(1)
-        
-    def __repr__(self):
-        return f"CAR({self.value})"
-    
+    "car",
+    "cdr"
+]    
 
 def debug(*args):
     if DEBUG:
         print(*args)
 
-    
+def check_parenthesis(string):
+    open = 0
+    for c in string:
+        if c == "(":
+            open += 1
+        elif c == ")":
+            open -= 1
+        if open < 0:
+            return False
+    return open == 0
+
 def tokenize(string):
     debug(f"Tokenizing: {string}")
     
@@ -57,8 +44,10 @@ def tokenize(string):
         debug(f"Command: {string}")
         if first_element == "car":
             return CAR(tokenize(" ".join(string.split(" ")[1:])))
-    
-    result_lst = []
+        elif first_element == "cdr":
+            return CDR(tokenize(" ".join(string.split(" ")[1:])))
+           
+    result_lst = S_List()
     s_exp = ""
     i = 0
     
@@ -97,17 +86,13 @@ def tokenize(string):
         result_lst.append(tokenize(s_exp))
 
     return result_lst
-
-def prompt():
-    print("> ", end="")
-    return input()
     
 if __name__ == '__main__':
-    #while True:
-    #    value = prompt()
-    #    print(tokenize(value))
+    value = "(car (cdr (cdr (a b c))))"
+    
+    if not check_parenthesis(value):
+        print("Error: Invalid S-Expression")
+        exit(1)
 
-    value = "(car (a a a))"
     print(value)
-    print(tokenize(value))
-
+    print(tokenize(value).execute())
